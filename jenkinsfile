@@ -2,16 +2,16 @@ pipeline {
     agent any
 
     stages {
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         script {
-        //             def scannerHome = tool 'SonarQube'
-        //             withSonarQubeEnv {
-        //                 sh "${scannerHome}/bin/sonar-scanner"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarQube'
+                    withSonarQubeEnv {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
         // stage('Quality Gate Check') {
         //     steps {
         //         script {
@@ -22,33 +22,33 @@ pipeline {
         //         }
         //     }
         // }
-        stage('test2') {
-            steps {
-                script {
-                    """
-                    sudo docker images
-                    sudo docker pull ubuntu
-                    sudo docker images
-                    """
-                }
-            }
-        }
-        stage('SonarQube analysis') {
-            agent {
-                docker {
-                    image 'sonarsource/sonar-scanner-cli:4.8.0'
-                }
-            }
-            environment {
-                CI = 'true'
-                scannerHome = '/opt/sonar-scanner'
-            }
-            steps {
-                withSonarQubeEnv('Sonar') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
-            }
-        }
+        // stage('test2') {
+        //     steps {
+        //         script {
+        //             """
+        //             sudo docker images
+        //             sudo docker pull ubuntu
+        //             sudo docker images
+        //             """
+        //         }
+        //     }
+        // }
+        // stage('SonarQube analysis') {
+        //     agent {
+        //         docker {
+        //             image 'sonarsource/sonar-scanner-cli:4.8.0'
+        //         }
+        //     }
+        //     environment {
+        //         CI = 'true'
+        //         scannerHome = '/opt/sonar-scanner'
+        //     }
+        //     steps {
+        //         withSonarQubeEnv('Sonar') {
+        //             sh "${scannerHome}/bin/sonar-scanner"
+        //         }
+        //     }
+        // }
         stage('test') {
             steps {
                 script {
