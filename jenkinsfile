@@ -2,23 +2,39 @@ pipeline {
     agent any
 
     stages {
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool 'SonarQube'
-                    withSonarQubeEnv {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         script {
+        //             def scannerHome = tool 'SonarQube'
+        //             withSonarQubeEnv {
+        //                 sh "${scannerHome}/bin/sonar-scanner"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Quality Gate Check') {
+        //     steps {
+        //         script {
+        //             def qg = waitForQualityGate()
+        //             if (qg.status != 'OK') {
+        //                 error "Quality Gate failed: ${qg.status}"
+        //             }
+        //         }
+        //     }
+        // }
+        stage('SonarQube analysis') {
+            agent {
+                docker {
+                    image 'sonarsource/sonar-scanner-cli:4.8.0'
                 }
             }
-        }
-        stage('Quality Gate Check') {
+            environment {
+                CI = 'true'
+                scannerHome = '/opt/sonar-scanner'
+            }
             steps {
-                script {
-                    def qg = waitForQualityGate()
-                    if (qg.status != 'OK') {
-                        error "Quality Gate failed: ${qg.status}"
-                    }
+                withSonarQubeEnv('Sonar') {
+                    sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
         }
@@ -30,6 +46,61 @@ pipeline {
                     """
                 }
             }
+        }
+    }
+}
+
+
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout your source code repository here
+                // For example, you can use 'git' or 'svn' commands.
+                // Example with Git:
+                sh 'git checkout <branch>'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Add your build steps here
+            }
+        }
+
+        stage('SonarQube analysis') {
+            agent {
+                docker {
+                    image 'sonarsource/sonar-scanner-cli:4.8.0'
+                }
+            }
+            environment {
+                CI = 'true'
+                scannerHome = '/opt/sonar-scanner'
+            }
+            steps {
+                withSonarQubeEnv('Sonar') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // Add your deployment steps here
+            }
+        }
+    }
+
+    post {
+        success {
+            // Actions to take when the pipeline is successful
+        }
+        failure {
+            // Actions to take when the pipeline fails
         }
     }
 }
