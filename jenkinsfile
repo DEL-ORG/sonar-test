@@ -22,6 +22,15 @@ pipeline {
         //         }
         //     }
         // }
+        stage('test') {
+            steps {
+                script {
+                    """
+                    sudo docker images
+                    """
+                }
+            }
+        }
         stage('SonarQube analysis') {
             agent {
                 docker {
