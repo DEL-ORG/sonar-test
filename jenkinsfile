@@ -27,6 +27,8 @@ pipeline {
                 script {
                     """
                     sudo docker images
+                    sudo docker pull ubuntu
+                    sudo docker images
                     """
                 }
             }
